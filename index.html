@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Exam Syllabus Tracker | Smart Dashboard + PDF Charts</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- html2canvas and jsPDF - more reliable than html2pdf -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+<div class="app-container">
+  <div class="top-bar">
+    <div class="tracker-header">
+      <h1>📚 Exam Syllabus Tracker Pro</h1>
+      <p>Organize exams → subjects → topics | Track progress | PDF report with graph</p>
+    </div>
+    <button id="darkModeToggle" class="dark-toggle-btn">
+      <span class="toggle-icon">🌙</span>
+      <span class="toggle-text">Dark Mode</span>
+    </button>
+  </div>
+
+  <!-- Add Exam Form -->
+  <div class="card">
+    <div class="card-title">📌 1. Create / Manage Exam</div>
+    <div class="form-grid">
+      <div class="input-group">
+        <label>Exam Name</label>
+        <input type="text" id="examNameInput" placeholder="e.g., UPSC, JEE, Banking">
+      </div>
+      <button id="addExamBtn">➕ Add Exam</button>
+    </div>
+  </div>
+
+  <!-- Add Subject & Topic Section -->
+  <div class="card">
+    <div class="card-title">📖 2. Add Subject & Topics under Exam</div>
+    <div class="form-grid">
+      <div class="input-group">
+        <label>Select Exam</label>
+        <select id="examSelectForTopic"></select>
+      </div>
+      <div class="input-group">
+        <label>Subject Name</label>
+        <input type="text" id="newSubjectName" placeholder="e.g., Mathematics">
+      </div>
+      <button id="addSubjectBtn">➕ Add Subject</button>
+    </div>
+    <div class="form-grid" style="margin-top: 1rem;">
+      <div class="input-group">
+        <label>Select Subject</label>
+        <select id="subjectSelectForTopic"></select>
+      </div>
+      <div class="input-group">
+        <label>Topic Name</label>
+        <input type="text" id="newTopicName" placeholder="e.g., Calculus">
+      </div>
+      <button id="addTopicBtn">📌 Add Topic</button>
+    </div>
+  </div>
+
+  <!-- Syllabus Dashboard -->
+  <div class="card">
+    <div class="card-title">🎯 Syllabus & Progress Overview</div>
+    <div id="examsContainer"></div>
+  </div>
+
+  <!-- Report Preview + Graph + PDF Download -->
+  <div class="card">
+    <div class="flex-between">
+      <div class="card-title">📊 Exam Progress Report & Chart</div>
+      <div>
+        <button id="refreshReportBtn" class="btn-outline">⟳ Update Chart</button>
+        <button id="downloadPdfBtn" class="btn-success">📄 Download PDF Report</button>
+      </div>
+    </div>
+    <div>
+      <label>Select Exam for Report:</label>
+      <select id="reportExamSelect" style="margin-bottom: 1rem; width: 100%; max-width: 300px;"></select>
+    </div>
+    <div id="chartContainer" class="chart-container">
+      <canvas id="progressChart" width="400" height="200"></canvas>
+    </div>
+    <div id="reportPreview" class="report-preview">Select an exam to see detailed progress and chart.</div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
