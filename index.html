@@ -1,94 +1,402 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Exam Syllabus Tracker | Smart Dashboard + PDF Charts</title>
-  <link rel="stylesheet" href="style.css">
-  <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <!-- html2canvas and jsPDF - more reliable than html2pdf -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-</head>
-<body>
-<div class="app-container">
-  <div class="top-bar">
-    <div class="tracker-header">
-      <h1>📚 Exam Syllabus Tracker Pro</h1>
-      <p>Organize exams → subjects → topics | Track progress | PDF report with graph</p>
-    </div>
-    <button id="darkModeToggle" class="dark-toggle-btn">
-      <span class="toggle-icon">🌙</span>
-      <span class="toggle-text">Dark Mode</span>
-    </button>
-  </div>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui, 'Segoe UI', 'Inter', 'Roboto', sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
 
-  <!-- Add Exam Form -->
-  <div class="card">
-    <div class="card-title">📌 1. Create / Manage Exam</div>
-    <div class="form-grid">
-      <div class="input-group">
-        <label>Exam Name</label>
-        <input type="text" id="examNameInput" placeholder="e.g., UPSC, JEE, Banking">
-      </div>
-      <button id="addExamBtn">➕ Add Exam</button>
-    </div>
-  </div>
+:root {
+  --bg-body: #f4f7fc;
+  --bg-card: rgba(255, 255, 255, 0.95);
+  --text-primary: #1e2f3e;
+  --text-secondary: #4a627a;
+  --text-white: #ffffff;
+  --border-light: #cbdcec;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --danger: #ef4444;
+  --success: #10b981;
+  --card-shadow: 0 12px 28px rgba(0, 0, 0, 0.05);
+  --topic-bg: #f9fdfe;
+  --chart-bg: #ffffff;
+}
 
-  <!-- Add Subject & Topic Section -->
-  <div class="card">
-    <div class="card-title">📖 2. Add Subject & Topics under Exam</div>
-    <div class="form-grid">
-      <div class="input-group">
-        <label>Select Exam</label>
-        <select id="examSelectForTopic"></select>
-      </div>
-      <div class="input-group">
-        <label>Subject Name</label>
-        <input type="text" id="newSubjectName" placeholder="e.g., Mathematics">
-      </div>
-      <button id="addSubjectBtn">➕ Add Subject</button>
-    </div>
-    <div class="form-grid" style="margin-top: 1rem;">
-      <div class="input-group">
-        <label>Select Subject</label>
-        <select id="subjectSelectForTopic"></select>
-      </div>
-      <div class="input-group">
-        <label>Topic Name</label>
-        <input type="text" id="newTopicName" placeholder="e.g., Calculus">
-      </div>
-      <button id="addTopicBtn">📌 Add Topic</button>
-    </div>
-  </div>
+body.dark {
+  --bg-body: #121826;
+  --bg-card: #1e293b;
+  --text-primary: #ffffff;
+  --text-secondary: #e2e8f0;
+  --border-light: #334155;
+  --accent: #60a5fa;
+  --accent-hover: #3b82f6;
+  --danger: #f87171;
+  --success: #34d399;
+  --card-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+  --topic-bg: #0f172a;
+  --chart-bg: #1e293b;
+}
 
-  <!-- Syllabus Dashboard -->
-  <div class="card">
-    <div class="card-title">🎯 Syllabus & Progress Overview</div>
-    <div id="examsContainer"></div>
-  </div>
+body {
+  background: var(--bg-body);
+  padding: 1.5rem;
+  min-height: 100vh;
+  color: var(--text-primary);
+}
 
-  <!-- Report Preview + Graph + PDF Download -->
-  <div class="card">
-    <div class="flex-between">
-      <div class="card-title">📊 Exam Progress Report & Chart</div>
-      <div>
-        <button id="refreshReportBtn" class="btn-outline">⟳ Update Chart</button>
-        <button id="downloadPdfBtn" class="btn-success">📄 Download PDF Report</button>
-      </div>
-    </div>
-    <div>
-      <label>Select Exam for Report:</label>
-      <select id="reportExamSelect" style="margin-bottom: 1rem; width: 100%; max-width: 300px;"></select>
-    </div>
-    <div id="chartContainer" class="chart-container">
-      <canvas id="progressChart" width="400" height="200"></canvas>
-    </div>
-    <div id="reportPreview" class="report-preview">Select an exam to see detailed progress and chart.</div>
-  </div>
-</div>
+.app-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
 
-<script src="script.js"></script>
-</body>
-</html>
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.tracker-header h1 {
+  font-size: 2rem;
+  background: linear-gradient(135deg, var(--accent), #1e3c72);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.tracker-header p {
+  color: var(--text-secondary);
+}
+
+.dark-toggle-btn {
+  background: var(--bg-card);
+  border: 2px solid var(--accent);
+  border-radius: 3rem;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.dark-toggle-btn:hover {
+  transform: scale(1.05);
+  background: var(--accent);
+  color: white;
+}
+
+.card {
+  background: var(--bg-card);
+  border-radius: 1.8rem;
+  box-shadow: var(--card-shadow);
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--border-light);
+}
+
+.card-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  border-left: 5px solid var(--accent);
+  padding-left: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.form-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.input-group {
+  flex: 1 1 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.input-group label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+input, select {
+  padding: 0.7rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--border-light);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+}
+
+button {
+  background: var(--accent);
+  border: none;
+  padding: 0.7rem 1.4rem;
+  border-radius: 2rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+
+.btn-outline:hover {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+}
+
+.btn-success {
+  background: var(--success);
+  color: white;
+}
+
+.btn-success:hover {
+  background: #059669;
+}
+
+.btn-sm {
+  padding: 0.3rem 0.8rem;
+  font-size: 0.7rem;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.exam-card {
+  background: var(--topic-bg);
+  border-radius: 1.5rem;
+  padding: 1.2rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border-light);
+}
+
+.exam-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  border-bottom: 1px dashed var(--border-light);
+  padding-bottom: 0.7rem;
+}
+
+.exam-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.subject-item {
+  margin-left: 1rem;
+  margin-top: 1rem;
+  background: var(--bg-card);
+  border-radius: 1.2rem;
+  padding: 0.8rem 1rem;
+}
+
+.subject-title {
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  color: var(--text-primary);
+}
+
+.subject-title span {
+  color: var(--text-primary);
+}
+
+.topic-list {
+  list-style: none;
+  margin-top: 0.6rem;
+  margin-left: 1rem;
+}
+
+.topic-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  color: var(--text-primary);
+}
+
+.topic-item span {
+  color: var(--text-primary);
+}
+
+.status-badge {
+  padding: 0.2rem 0.7rem;
+  border-radius: 2rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.status-complete {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-pending {
+  background: #fff3e3;
+  color: #b45309;
+}
+
+body.dark .status-complete {
+  background: #064e3b;
+  color: #a7f3d0;
+}
+
+body.dark .status-pending {
+  background: #78350f;
+  color: #fed7aa;
+}
+
+.chart-container {
+  max-width: 500px;
+  margin: 1rem auto;
+  background: var(--chart-bg);
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--border-light);
+}
+
+canvas {
+  max-height: 250px;
+  width: 100%;
+}
+
+.report-preview {
+  background: var(--topic-bg);
+  border-radius: 1rem;
+  padding: 1rem;
+  font-size: 0.85rem;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+}
+
+.report-preview strong,
+.report-preview li,
+.report-preview ul,
+.report-preview i {
+  color: var(--text-primary);
+}
+
+.empty-msg {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+}
+
+.add-topic-inline {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.add-topic-inline input {
+  flex: 1;
+  padding: 0.4rem 0.7rem;
+}
+
+.add-topic-inline input::placeholder {
+  color: var(--text-secondary);
+}
+
+/* Ensure all text elements inherit proper color in dark mode */
+body.dark,
+body.dark .card,
+body.dark .exam-card,
+body.dark .subject-item,
+body.dark .topic-list,
+body.dark .topic-item,
+body.dark .report-preview,
+body.dark .empty-msg,
+body.dark .card-title,
+body.dark .exam-name,
+body.dark .subject-title,
+body.dark .subject-title span,
+body.dark .topic-item span,
+body.dark .add-topic-inline input,
+body.dark .add-topic-inline input::placeholder {
+  color: var(--text-primary);
+}
+
+/* Dropdown text color in dark mode */
+body.dark select option {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+/* Specific fix for report preview text */
+body.dark .report-preview strong {
+  color: #ffffff;
+}
+
+body.dark .report-preview li {
+  color: #e2e8f0;
+}
+
+/* Chart text colors in dark mode */
+body.dark canvas {
+  filter: brightness(0.9);
+}
+
+@media (max-width: 700px) {
+  body {
+    padding: 1rem;
+  }
+  .card {
+    padding: 1rem;
+  }
+}
