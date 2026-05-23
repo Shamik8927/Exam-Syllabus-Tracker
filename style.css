@@ -11,6 +11,7 @@
   --bg-card: rgba(255, 255, 255, 0.95);
   --text-primary: #1e2f3e;
   --text-secondary: #4a627a;
+  --text-white: #ffffff;
   --border-light: #cbdcec;
   --accent: #3b82f6;
   --accent-hover: #2563eb;
@@ -24,8 +25,8 @@
 body.dark {
   --bg-body: #121826;
   --bg-card: #1e293b;
-  --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
+  --text-primary: #ffffff;
+  --text-secondary: #e2e8f0;
   --border-light: #334155;
   --accent: #60a5fa;
   --accent-hover: #3b82f6;
@@ -33,13 +34,14 @@ body.dark {
   --success: #34d399;
   --card-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
   --topic-bg: #0f172a;
-  --chart-bg: #0f172a;
+  --chart-bg: #1e293b;
 }
 
 body {
   background: var(--bg-body);
   padding: 1.5rem;
   min-height: 100vh;
+  color: var(--text-primary);
 }
 
 .app-container {
@@ -135,6 +137,17 @@ input, select {
   font-size: 0.9rem;
 }
 
+input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+}
+
 button {
   background: var(--accent);
   border: none;
@@ -162,9 +175,28 @@ button:hover {
   color: white;
 }
 
-.btn-danger { background: var(--danger); }
-.btn-success { background: var(--success); }
-.btn-sm { padding: 0.3rem 0.8rem; font-size: 0.7rem; }
+.btn-danger {
+  background: var(--danger);
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+}
+
+.btn-success {
+  background: var(--success);
+  color: white;
+}
+
+.btn-success:hover {
+  background: #059669;
+}
+
+.btn-sm {
+  padding: 0.3rem 0.8rem;
+  font-size: 0.7rem;
+}
 
 .flex-between {
   display: flex;
@@ -212,6 +244,11 @@ button:hover {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 0.5rem;
+  color: var(--text-primary);
+}
+
+.subject-title span {
+  color: var(--text-primary);
 }
 
 .topic-list {
@@ -227,6 +264,11 @@ button:hover {
   padding: 0.4rem 0;
   flex-wrap: wrap;
   gap: 0.5rem;
+  color: var(--text-primary);
+}
+
+.topic-item span {
+  color: var(--text-primary);
 }
 
 .status-badge {
@@ -236,11 +278,25 @@ button:hover {
   font-weight: 600;
 }
 
-.status-complete { background: #d1fae5; color: #065f46; }
-.status-pending { background: #fff3e3; color: #b45309; }
+.status-complete {
+  background: #d1fae5;
+  color: #065f46;
+}
 
-body.dark .status-complete { background: #064e3b; color: #a7f3d0; }
-body.dark .status-pending { background: #78350f; color: #fed7aa; }
+.status-pending {
+  background: #fff3e3;
+  color: #b45309;
+}
+
+body.dark .status-complete {
+  background: #064e3b;
+  color: #a7f3d0;
+}
+
+body.dark .status-pending {
+  background: #78350f;
+  color: #fed7aa;
+}
 
 .chart-container {
   max-width: 500px;
@@ -264,6 +320,14 @@ canvas {
   max-height: 300px;
   overflow-y: auto;
   border: 1px solid var(--border-light);
+  color: var(--text-primary);
+}
+
+.report-preview strong,
+.report-preview li,
+.report-preview ul,
+.report-preview i {
+  color: var(--text-primary);
 }
 
 .empty-msg {
@@ -285,7 +349,54 @@ canvas {
   padding: 0.4rem 0.7rem;
 }
 
+.add-topic-inline input::placeholder {
+  color: var(--text-secondary);
+}
+
+/* Ensure all text elements inherit proper color in dark mode */
+body.dark,
+body.dark .card,
+body.dark .exam-card,
+body.dark .subject-item,
+body.dark .topic-list,
+body.dark .topic-item,
+body.dark .report-preview,
+body.dark .empty-msg,
+body.dark .card-title,
+body.dark .exam-name,
+body.dark .subject-title,
+body.dark .subject-title span,
+body.dark .topic-item span,
+body.dark .add-topic-inline input,
+body.dark .add-topic-inline input::placeholder {
+  color: var(--text-primary);
+}
+
+/* Dropdown text color in dark mode */
+body.dark select option {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+/* Specific fix for report preview text */
+body.dark .report-preview strong {
+  color: #ffffff;
+}
+
+body.dark .report-preview li {
+  color: #e2e8f0;
+}
+
+/* Chart text colors in dark mode */
+body.dark canvas {
+  filter: brightness(0.9);
+}
+
 @media (max-width: 700px) {
-  body { padding: 1rem; }
-  .card { padding: 1rem; }
+  body {
+    padding: 1rem;
+  }
+  .card {
+    padding: 1rem;
+  }
 }
